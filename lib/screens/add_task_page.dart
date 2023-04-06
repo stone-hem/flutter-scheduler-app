@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:scheduler/controlllers/task_controller.dart';
+import 'package:scheduler/models/task.dart';
 import 'package:scheduler/screens/theme.dart';
 import 'package:scheduler/screens/widgets/buttons.dart';
 import 'package:scheduler/screens/widgets/input_field.dart';
@@ -13,9 +15,11 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
+  //define task controller
+  final TaskController _taskController = Get.put(TaskController());
   //define controllers
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _noteController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
   //initialize times in the input boxes
   DateTime _selectedDate = DateTime.now();
   String _endTime = "9:30 PM";
@@ -48,8 +52,16 @@ class _AddTaskPageState extends State<AddTaskPage> {
               "Add Task",
               style: headingStyle,
             ),
-            InputField(title: "Title", hint: "Enter your task's title",controller: _titleController,),
-            InputField(title: "Note", hint: "Enter your task's notes", controller: _noteController,),
+            InputField(
+              title: "Title",
+              hint: "Enter your task's title",
+              controller: _titleController,
+            ),
+            InputField(
+              title: "Note",
+              hint: "Enter your task's notes",
+              controller: _noteController,
+            ),
             InputField(
               title: "Date",
               hint: DateFormat.yMd().format(_selectedDate),
@@ -147,7 +159,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _colorSelection(),
-                MyButton(label: "Create Task", onTap: () =>_validator())
+                MyButton(label: "Create Task", onTap: () => _validator())
               ],
             )
           ],
@@ -158,15 +170,31 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   _validator() {
     if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
+      _addTaskToDatabase();
       Get.back();
     } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
       Get.snackbar("missing data", "All fields are required",
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Get.isDarkMode?Colors.grey:Colors.white,
-      icon: Icon(Icons.warning_amber),
-      colorText: Colors.red
-      );
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Get.isDarkMode ? Colors.grey : Colors.white,
+          icon: Icon(Icons.warning_amber),
+          colorText: Colors.red);
     }
+  }
+
+  _addTaskToDatabase() async {
+    int value = await _taskController.addTask(
+        task: Task(
+      note: _noteController.text,
+      title: _titleController.text,
+      isCompleted: 0,
+      date: DateFormat.yMd().format(_selectedDate),
+      startTime: _startTime,
+      endTime: _endTime,
+      color: _selectedColor,
+      remind: _selectedRemind,
+      repeat: _selectedRepeat,
+    ));
+    print("my id is ${value}");
   }
 
   _colorSelection() {
