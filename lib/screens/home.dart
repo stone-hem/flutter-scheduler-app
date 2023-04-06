@@ -79,7 +79,7 @@ class _HomeState extends State<Home> {
             ],
           ),
           MyButton(
-              label: "+ Add Task", onTap: () => Get.to(const AddTaskPage()))
+              label: "+ Add Task", onTap: () => Get.to(()=>const AddTaskPage()))
         ],
       ),
     );

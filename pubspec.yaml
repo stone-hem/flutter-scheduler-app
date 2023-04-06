@@ -43,6 +43,8 @@ dependencies:
   intl: #time formats simplification
   google_fonts: #get the google fonts
   date_picker_timeline: #display the dates
+  #plugin to submit data to database
+  sqflite:
 
 
 dev_dependencies:

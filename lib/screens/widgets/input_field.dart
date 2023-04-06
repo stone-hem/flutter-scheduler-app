@@ -41,6 +41,7 @@ class InputField extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextFormField(
+                    //if there is a widget, then set it to read only
                     readOnly: widget==null?false:true,
                     autofocus: false,
                     cursorColor: Get.isDarkMode?Colors.grey[100]:Colors.grey[700],
@@ -64,6 +65,8 @@ class InputField extends StatelessWidget {
                     )
                   )
                   ),
+                  //check if another widget exists in the row
+                  //this is the reason why expanded widget is used
                   widget==null?Container():Container(child: widget,)
               ],
             ),

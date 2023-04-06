@@ -15,28 +15,28 @@ class Themes {
   static final light = ThemeData(
       colorScheme: const ColorScheme(
           brightness: Brightness.light,
-          primary: whiteColor,
-          onPrimary: blackColor,
+          primary: darkBlue,
+          onPrimary: whiteColor,
           secondary: whiteColor,
-          onSecondary: Colors.blueGrey,
+          onSecondary: blackColor,
           error: Colors.redAccent,
           onError: Colors.red,
           background: whiteColor,
           onBackground: blackColor,
           surface: whiteColor,
-          onSurface: Colors.white30));
+          onSurface: blackColor));
   //this is my dark theme colors
   static final dark = ThemeData(
       colorScheme: ColorScheme(
-          background: blackColor,
+          background: bgDarkScaffold,
+          onBackground: Colors.grey.shade400,
           brightness: Brightness.dark,
-          primary: bgDarkScaffold,
+          primary: blackColor,
           onPrimary: whiteColor,
           secondary: Colors.black38,
           onSecondary: Colors.grey,
           error: Colors.redAccent,
           onError: Colors.redAccent,
-          onBackground: Colors.grey.shade400,
           surface: blackColor,
           onSurface: whiteColor));
 }

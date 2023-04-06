@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:scheduler/screens/theme.dart';
+import 'package:scheduler/screens/widgets/buttons.dart';
 import 'package:scheduler/screens/widgets/input_field.dart';
 
 class AddTaskPage extends StatefulWidget {
@@ -12,6 +13,10 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
+  //define controllers
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _noteController = TextEditingController();
+  //initialize times in the input boxes
   DateTime _selectedDate = DateTime.now();
   String _endTime = "9:30 PM";
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
@@ -33,153 +38,177 @@ class _AddTaskPageState extends State<AddTaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.theme.colorScheme.primary,
+      backgroundColor: context.theme.colorScheme.background,
       appBar: _appBar(),
       body: SingleChildScrollView(
-          padding:const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
-          child: Column(
-            children: [
-              Text(
-                "Add Task",
-                style: headingStyle,
-              ),
-              InputField(title: "Title", hint: "Enter your task's title"),
-              InputField(title: "Note", hint: "Enter your task's notes"),
-              InputField(
-                title: "Date",
-                hint: DateFormat.yMd().format(_selectedDate),
-                widget: IconButton(
-                    icon: Icon(Icons.calendar_today_outlined),
-                    onPressed: () {
-                      _getDateFromUser();
-                    }),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: InputField(
-                      title: "Start date",
-                      hint: _startTime,
-                      widget: IconButton(
-                        onPressed: () {
-                          _getUserTime(isStartTime: true);
-                        },
-                        icon: Icon(Icons.access_time_rounded),
-                      ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Column(
+          children: [
+            Text(
+              "Add Task",
+              style: headingStyle,
+            ),
+            InputField(title: "Title", hint: "Enter your task's title",controller: _titleController,),
+            InputField(title: "Note", hint: "Enter your task's notes", controller: _noteController,),
+            InputField(
+              title: "Date",
+              hint: DateFormat.yMd().format(_selectedDate),
+              widget: IconButton(
+                  icon: Icon(Icons.calendar_today_outlined),
+                  onPressed: () {
+                    _getDateFromUser();
+                  }),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: InputField(
+                    title: "Start date",
+                    hint: _startTime,
+                    widget: IconButton(
+                      onPressed: () {
+                        _getUserTime(isStartTime: true);
+                      },
+                      icon: Icon(Icons.access_time_rounded),
                     ),
                   ),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  Expanded(
-                    child: InputField(
-                      title: "End date",
-                      hint: _endTime,
-                      widget: IconButton(
-                        onPressed: () {
-                          _getUserTime(isStartTime: false);
-                        },
-                        icon: Icon(Icons.access_time_rounded),
-                      ),
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
+                Expanded(
+                  child: InputField(
+                    title: "End date",
+                    //Todo : set end time two hours later
+                    hint: _endTime,
+                    widget: IconButton(
+                      onPressed: () {
+                        _getUserTime(isStartTime: false);
+                      },
+                      icon: Icon(Icons.access_time_rounded),
                     ),
-                  )
-                ],
-              ),
-              InputField(
-                title: "Remind",
-                hint: "$_selectedRemind minutes early",
-                widget: DropdownButton(
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
                   ),
-                  iconSize: 32,
-                  elevation: 4,
-                  style: inputTextStyle,
-                  underline: Container(
-                    height: 0,
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedRemind = int.parse(newValue!);
-                    });
-                  },
-                  items: remindList.map<DropdownMenuItem<String>>((int value) {
-                    return DropdownMenuItem<String>(
-                        value: value.toString(), child: Text(value.toString()));
-                  }).toList(),
+                )
+              ],
+            ),
+            InputField(
+              title: "Remind",
+              hint: "$_selectedRemind minutes early",
+              widget: DropdownButton(
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
                 ),
-              ),
-              InputField(
-                title: "Repeat",
-                hint: "$_selectedRepeat",
-                widget: DropdownButton(
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
-                  ),
-                  iconSize: 32,
-                  elevation: 4,
-                  style: inputTextStyle,
-                  underline: Container(
-                    height: 0,
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedRepeat = newValue!;
-                    });
-                  },
-                  items:
-                      repeatList.map<DropdownMenuItem<String>>((String? value) {
-                    return DropdownMenuItem<String>(
-                        value: value, child: Text(value!));
-                  }).toList(),
+                iconSize: 32,
+                elevation: 4,
+                style: inputTextStyle,
+                underline: Container(
+                  height: 0,
                 ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedRemind = int.parse(newValue!);
+                  });
+                },
+                items: remindList.map<DropdownMenuItem<String>>((int value) {
+                  return DropdownMenuItem<String>(
+                      value: value.toString(), child: Text(value.toString()));
+                }).toList(),
               ),
-              const SizedBox(
-                height: 20,
+            ),
+            InputField(
+              title: "Repeat",
+              hint: "$_selectedRepeat",
+              widget: DropdownButton(
+                icon: const Icon(
+                  Icons.keyboard_arrow_down,
+                ),
+                iconSize: 32,
+                elevation: 4,
+                style: inputTextStyle,
+                underline: Container(
+                  height: 0,
+                ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedRepeat = newValue!;
+                  });
+                },
+                items:
+                    repeatList.map<DropdownMenuItem<String>>((String? value) {
+                  return DropdownMenuItem<String>(
+                      value: value, child: Text(value!));
+                }).toList(),
               ),
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Color",
-                        style: titleStyle,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Wrap(
-                          children: List<Widget>.generate(3, (int index) {
-                        return GestureDetector(
-                          onTap: () {
-                            _selectedColor = index;
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: CircleAvatar(
-                              radius: 14,
-                              backgroundColor: index == 0
-                                  ? Themes.cardOne
-                                  : index == 1
-                                      ? Themes.cardTwo
-                                      : Themes.cardThree,
-                                      child:const Icon(Icons.done,
-                                      color: Colors.white,
-                                      size: 16,
-                                      ) ,
-                            ),
-                          ),
-                        );
-                      }))
-                    ],
-                  )
-                ],
-              )
-            ],
-          ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _colorSelection(),
+                MyButton(label: "Create Task", onTap: () =>_validator())
+              ],
+            )
+          ],
         ),
-     
+      ),
+    );
+  }
+
+  _validator() {
+    if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
+      Get.back();
+    } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
+      Get.snackbar("missing data", "All fields are required",
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Get.isDarkMode?Colors.grey:Colors.white,
+      icon: Icon(Icons.warning_amber),
+      colorText: Colors.red
+      );
+    }
+  }
+
+  _colorSelection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Color",
+          style: titleStyle,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Wrap(
+            children: List<Widget>.generate(3, (int index) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedColor = index;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: CircleAvatar(
+                radius: 14,
+                backgroundColor: index == 0
+                    ? Themes.cardOne
+                    : index == 1
+                        ? Themes.cardTwo
+                        : Themes.cardThree,
+                child: _selectedColor == index
+                    ? const Icon(
+                        Icons.done,
+                        color: Colors.white,
+                        size: 16,
+                      )
+                    : Container(),
+              ),
+            ),
+          );
+        }))
+      ],
     );
   }
 
@@ -218,8 +247,11 @@ class _AddTaskPageState extends State<AddTaskPage> {
   _getDateFromUser() async {
     DateTime? _pickerDate = await showDatePicker(
         context: context,
+        //initial selected date
         initialDate: DateTime.now(),
-        firstDate: DateTime(2020),
+        //first date on the calender
+        firstDate: DateTime(2022),
+        //last date on the calender
         lastDate: DateTime(2120));
     if (_pickerDate != null) {
       setState(() {
