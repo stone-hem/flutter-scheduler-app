@@ -8,7 +8,6 @@ import 'package:scheduler/models/task.dart';
 import 'package:scheduler/screens/add_task_page.dart';
 import 'package:scheduler/screens/theme.dart';
 import 'package:scheduler/screens/widgets/buttons.dart';
-import 'package:scheduler/screens/widgets/task_display.dart';
 import 'package:scheduler/services/notifysevices.dart';
 import 'package:scheduler/services/themeservices.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -133,7 +132,7 @@ class _HomeState extends State<Home> {
   _showBottomSheet(BuildContext context, Task task) {
     Get.bottomSheet(Container(
       padding: const EdgeInsets.only(top: 4),
-      height: task.isCompleted==1?,
+      height: task.isCompleted==1?10:15,
     ));
   }
 
