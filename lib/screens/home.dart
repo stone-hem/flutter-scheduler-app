@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:scheduler/controlllers/task_controller.dart';
+import 'package:scheduler/db/db_helper.dart';
 import 'package:scheduler/screens/add_task_page.dart';
 import 'package:scheduler/screens/theme.dart';
 import 'package:scheduler/screens/widgets/buttons.dart';
@@ -17,6 +19,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final _taskController = Get.put(TaskController());
+
   DateTime _selectedDate = DateTime.now();
 
   var notifier;
@@ -27,6 +31,7 @@ class _HomeState extends State<Home> {
     notifier = Notifier();
     notifier.initializeNotification();
     notifier.requestIOSPermissions();
+    _taskController.getTasks();
   }
 
   @override
@@ -35,9 +40,33 @@ class _HomeState extends State<Home> {
       //customized application bar
       appBar: _appBar(),
       body: Column(
-        children: [_addTaskBar(), _datePicker()],
+        children: [_addTaskBar(), _datePicker(), _displayTasks()],
       ),
     );
+  }
+
+  _displayTasks() {
+    return Expanded(child: Obx(() {
+      return ListView.builder(
+          itemCount: _taskController.taskList.length,
+          itemBuilder: (_, index) {
+            return GestureDetector(
+              onTap: () {
+                _taskController.remove(_taskController.taskList[index].id);
+              },
+              child: Container(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                width: 100,
+                height: 50,
+                color: Themes.cardOne,
+                child: Text(
+                  _taskController.taskList[index].title.toString(),
+                ),
+              ),
+            );
+          });
+    }));
   }
 
   _datePicker() {
@@ -48,7 +77,7 @@ class _HomeState extends State<Home> {
         height: 100,
         width: 80,
         initialSelectedDate: DateTime.now(),
-        selectionColor: Get.isDarkMode ? Themes.blackColor : Themes.darkBlue,
+        selectionColor: Get.isDarkMode ? Themes.blackColor : Themes.mainColor,
         selectedTextColor: Colors.white,
         dateTextStyle: GoogleFonts.lato(
             fontSize: 20, fontWeight: FontWeight.w600, color: Colors.grey),
@@ -79,7 +108,11 @@ class _HomeState extends State<Home> {
             ],
           ),
           MyButton(
-              label: "+ Add Task", onTap: () => Get.to(()=>const AddTaskPage()))
+              label: "+ Add Task",
+              onTap: () async {
+                await Get.to(() => const AddTaskPage());
+                _taskController.getTasks();
+              })
         ],
       ),
     );
@@ -107,7 +140,7 @@ class _HomeState extends State<Home> {
         child: Icon(
           Get.isDarkMode ? Icons.toggle_on : Icons.toggle_off,
           size: 30,
-          color: Get.isDarkMode ? Colors.white : Themes.darkBlue,
+          color: Get.isDarkMode ? Colors.white : Themes.mainColor,
         ),
       ),
       //actions tales a list and positions on the right side

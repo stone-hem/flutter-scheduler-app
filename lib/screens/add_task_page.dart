@@ -292,17 +292,17 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   //a function to get the time picker for the user to select
   _getUserTime({required bool isStartTime}) async {
-    var _pickedTime = await _showTimePicker();
-    String _formattedTime = _pickedTime.format(context);
-    if (_pickedTime == null) {
+    var pickedTime = await _showTimePicker();
+    String formattedTime = pickedTime.format(context);
+    if (pickedTime == null) {
       print("time null");
     } else if (isStartTime == true) {
       setState(() {
-        _startTime = _formattedTime;
+        _startTime = formattedTime;
       });
     } else if (isStartTime == false) {
       setState(() {
-        _endTime = _formattedTime;
+        _endTime = formattedTime;
       });
     }
   }

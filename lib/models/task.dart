@@ -37,6 +37,7 @@ class Task {
     remind = json['remind'];
     repeat = json['repeat'];
   }
+  
 
 //to submit data to db you have to convert to json format
   Map<String, dynamic> toJson() {
