@@ -7,10 +7,10 @@ class Themes {
   static const Color bgDarkScaffold = Color(0xff454545);
   static const Color blackColor = Color(0xff000000);
   static const Color whiteColor = Color(0xffffffff);
-  static const Color mainColor = Color(0xff696969);
+  static const Color mainColor = Color(0xff035CA3);
   static const Color cardOne = Color(0xff5DD6F4);
   static const Color cardTwo = Color(0xff525252);
-  static const Color cardThree = Color(0xff808080);
+  static const Color cardThree = Color(0xff024376);
   //this is my light theme colors
   static final light = ThemeData(
       colorScheme: const ColorScheme(
@@ -19,12 +19,12 @@ class Themes {
           onPrimary: whiteColor,
           secondary: whiteColor,
           onSecondary: blackColor,
-          error: Colors.redAccent,
-          onError: Colors.red,
           background: whiteColor,
           onBackground: blackColor,
           surface: whiteColor,
-          onSurface: blackColor));
+          onSurface: blackColor,
+          error: Colors.redAccent,
+          onError: Colors.red,));
   //this is my dark theme colors
   static final dark = ThemeData(
       colorScheme: ColorScheme(

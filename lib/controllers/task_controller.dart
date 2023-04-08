@@ -23,4 +23,8 @@ class TaskController extends GetxController {
   void remove(Task task) {
     DbHelper.remove(task);
   }
+
+  void tickTask(int id) async {
+    await DbHelper.update(id);
+  }
 }
