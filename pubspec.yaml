@@ -45,6 +45,8 @@ dependencies:
   date_picker_timeline: #display the dates
   #plugin to submit data to database
   sqflite:
+  #animations
+  flutter_staggered_animations:
 
 
 dev_dependencies:

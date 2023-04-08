@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:scheduler/controlllers/task_controller.dart';
+import 'package:scheduler/controllers/task_controller.dart';
 import 'package:scheduler/models/task.dart';
 import 'package:scheduler/screens/theme.dart';
 import 'package:scheduler/screens/widgets/buttons.dart';
