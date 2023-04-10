@@ -10,12 +10,11 @@ class DbHelper {
       return;
     }
     try {
-      String _path = await getDatabasesPath() + 'tasks.db';
+      String path = await getDatabasesPath() + 'tasks.db';
       _db = await openDatabase(
-        _path,
+        path,
         version: _version,
         onCreate: (db, version) {
-          print('creating a new db');
           return db.execute(
             "CREATE TABLE $_tableName("
             "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -33,12 +32,10 @@ class DbHelper {
   }
 
   static Future<int> insert(Task? task) async {
-    print("insert method called");
     return await _db?.insert(_tableName, task!.toJson()) ?? 1;
   }
 
   static Future<List<Map<String, dynamic>>> query() async {
-    print("query fun called");
     return await _db!.query(_tableName);
   }
 
@@ -46,7 +43,7 @@ class DbHelper {
     await _db!.delete(_tableName, where: 'id=?', whereArgs: [task.id]);
   }
 
-  static update(int id) async{
+  static update(int id) async {
     return await _db!.rawUpdate('''
     UPDATE tasks
     SET isCompleted=?

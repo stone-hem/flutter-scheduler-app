@@ -54,7 +54,7 @@ class _HomeState extends State<Home> {
           itemCount: _taskController.taskList.length,
           itemBuilder: (_, index) {
             Task task = _taskController.taskList[index];
-            print(task.toJson());
+            // print(task.toJson());
             if (task.repeat == 'Daily') {
               return AnimationConfiguration.staggeredList(
                   position: index,
@@ -290,6 +290,7 @@ class _HomeState extends State<Home> {
   }
 
   _datePicker() {
+  
     return Container(
       margin: const EdgeInsets.only(top: 20, left: 20),
       child: DatePicker(
