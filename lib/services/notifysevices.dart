@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get.dart';
+import 'package:scheduler/models/task.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -13,7 +15,7 @@ class Notifier {
   //
 
   initializeNotification() async {
-    tz.initializeTimeZones();
+    _configureLocalTime();
     //ios settings
     final IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings(
@@ -22,12 +24,12 @@ class Notifier {
             requestAlertPermission: false,
             onDidReceiveLocalNotification: onDidReceiveLocalNotification);
 
-            //android settings
+    //android settings
 
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings("appicon");
 
-        //initialize the two devices, add another for windows
+    //initialize the two devices, add another for windows
     final InitializationSettings initializationSettings =
         InitializationSettings(
       iOS: initializationSettingsIOS,
@@ -37,55 +39,105 @@ class Notifier {
         onSelectNotification: selectNotification);
   }
 
-    displayNotification({required String title, required String body}) async {
+  displayNotification({required String title, required String body}) async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
         'your channel id', 'your channel name',
         importance: Importance.max, priority: Priority.high);
+
     var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+
     var platformChannelSpecifics = new NotificationDetails(
-        android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
       0,
       title,
       body,
       platformChannelSpecifics,
-      payload: 'Default_Sound',
+      payload: title,
     );
   }
 
-   scheduledNotification() async {
-     await flutterLocalNotificationsPlugin.zonedSchedule(
-         0,
-         'scheduled title',
-         'theme changed 5 seconds ago',
-         tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
-         const NotificationDetails(
-             android: AndroidNotificationDetails('your channel id',
-                 'your channel name')),
-         androidAllowWhileIdle: true,
-         uiLocalNotificationDateInterpretation:
-             UILocalNotificationDateInterpretation.absoluteTime);
+  scheduledNotification(int hour, int minutes, Task task) async {
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        task.id!.toInt(),
+        task.title,
+        task.note,
+        _convertTime(hour, minutes),
+        //tz.TZDateTime.now(tz.local).add(Duration(seconds: minutes)),
+        const NotificationDetails(
+            android: AndroidNotificationDetails(
+                'your channel id', 'your channel name')),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+        payload: "${task.title}|" + "${task.note}|");
+  }
 
-   }
+  tz.TZDateTime _convertTime(int hour, int minutes) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduleDate =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minutes);
+    if (scheduleDate.isBefore(now)) {
+      scheduleDate = scheduleDate.add(const Duration(days: 1));
+    }
+    return scheduleDate;
+  }
+
+  Future<void> _configureLocalTime() async {
+    tz.initializeTimeZones();
+    final String timezone = await FlutterNativeTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timezone));
+  }
 
   void requestIOSPermissions() {
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-        IOSFlutterLocalNotificationsPlugin>()
+            IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
 
-    Future selectNotification(String? payload) async {
+  Future selectNotification(String? payload) async {
     if (payload != null) {
       print('notification payload: $payload');
     } else {
       print("Notification Done");
     }
-     Get.to(()=>Container(color: Colors.white));
+    if (payload=="Theme changed") {
+       Get.to(() => AlertDialog(
+          shadowColor: Colors.white70,
+          backgroundColor: Get.isDarkMode?Colors.black:Colors.white,
+          title: const Text("Theme Changed"),
+          content: Get.isDarkMode?const Text("Dark Mode Activated"):const Text("Light Mode Activated"),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Get.back();
+                },
+                child: const Text("Ok",))
+          ],
+        ));
+    } else {
+       Get.to(() => AlertDialog(
+          shadowColor: Colors.white70,
+          backgroundColor: Get.isDarkMode?Colors.black:Colors.white,
+          title: Text(payload.toString().split("|")[0]),
+          content: Text(payload.toString().split("|")[1]),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Get.back();
+                },
+                child: const Text("Ok"))
+          ],
+        ));
+    }
+   
   }
 
   Future onDidReceiveLocalNotification(

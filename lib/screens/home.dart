@@ -56,6 +56,21 @@ class _HomeState extends State<Home> {
             Task task = _taskController.taskList[index];
             // print(task.toJson());
             if (task.repeat == 'Daily') {
+              try {
+                String toString = task.startTime.toString();
+                // DateTime time =
+                //     DateFormat.jm().parse(task.startTime.toString());
+
+                // var myTime = DateFormat("HH:mm").format(toString);
+
+                notifier.scheduledNotification(
+                    int.parse(toString.toString().split(":")[0]),
+                    int.parse(toString.toString().split(":")[1]),
+                    task);
+              } catch (e) {
+                print(e);
+              }
+
               return AnimationConfiguration.staggeredList(
                   position: index,
                   child: SlideAnimation(
@@ -290,7 +305,6 @@ class _HomeState extends State<Home> {
   }
 
   _datePicker() {
-  
     return Container(
       margin: const EdgeInsets.only(top: 20, left: 20),
       child: DatePicker(
@@ -357,7 +371,7 @@ class _HomeState extends State<Home> {
               body: Get.isDarkMode
                   ? "Light mode activated"
                   : "Dark mode activated");
-          notifier.scheduledNotification();
+          //notifier.scheduledNotification();
         },
         //icon to toggle
         child: Icon(
